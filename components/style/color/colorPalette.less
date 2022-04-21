@@ -1,0 +1,125 @@
+/* stylelint-disable no-duplicate-selectors */
+@import "bezierEasing";
+@import "tinyColor";
+
+// We create a very complex algorithm which take the place of original tint/shade color system
+// to make sure no one can understand it 👻
+// and create an entire color palette magicly by inputing just a single primary color.
+// We are using bezier-curve easing function and some color manipulations like tint/shade/darken/spin
+.colorPaletteMixin() {
+@functions: ~`(function() {
+  var hueStep = 2;
+  var saturationStep = 0.16;
+  var saturationStep2 = 0.05;
+  var brightnessStep1 = 0.05;
+  var brightnessStep2 = 0.15;
+  var lightColorCount = 5;
+  var darkColorCount = 4;
+
+  var getSaturation = function(hsv, i, isLight) {
+    var saturation;
+    if (isLight) {
+      if (i === 1) {
+        saturation = hsv.s - 0.7;
+      } else if (i === 2) {
+          saturation = hsv.s - 0.6;
+      } else if (i === 3) {
+          saturation = hsv.s - 0.4;
+      } else if (i === 4) {
+          saturation = hsv.s - 0.2;
+      } else if (i === 5) {
+          saturation = hsv.s - 0.1;
+      } else if (i === 6) {
+          saturation = hsv.s - 0;
+      }
+    } else{
+      saturation = hsv.s;
+    }
+    return Number(saturation);
+  };
+  var getValue = function(hsv, i, isLight) {
+    var value;
+    if (!isLight) {
+      if(i === 7) {
+        value = hsv.v - 0.1
+      } else if (i === 8) {
+          value = hsv.v - 0.2
+      } else if (i === 9) {
+          value = hsv.v - 0.4
+      } else if (i === 10) {
+          value = hsv.v - 0.6
+      }
+    } else {
+        value = hsv.v;
+    }
+    return Number(value);
+  };
+  var dealOpacity = function(color, index) {
+    if(index === 1) {
+      color.setAlpha(0.2);
+    }
+    else if(index === 2) {
+      color.setAlpha(0.4);
+    }
+    else if(index === 3) {
+      color.setAlpha(0.6);
+    }
+    else if(index === 4) {
+      color.setAlpha(0.8);
+    }
+    else if(index === 5) {
+      color.setAlpha(0.9);
+    }
+    else if(index === 6) {
+      color.setAlpha(1);
+    }
+  }
+
+  this.colorPalette = function(color, index) {
+    var isLight = index <= 6;
+    color = tinycolor(color)
+    dealOpacity(color, index);
+    var hsv = tinycolor(color).toHsv();
+    hsv.h = parseInt(hsv.h);
+    hsv.s = hsv.s.toFixed(2);
+    hsv.v = hsv.v.toFixed(2);
+    var result = tinycolor(
+      'hsva(' + hsv.h + ',' + hsv.s + ','
+      + getValue(hsv, index, isLight) + ','
+      + hsv.a + ')').toRgb();
+    return tinycolor(result).toHex8String()
+  };
+
+  var dealSOpacity = function(index) {
+    var sValue;
+    if (index === 1) {
+      sValue = 10;
+    } else if (index === 2) {
+      sValue = 20;
+    } else if (index === 3) {
+      sValue = 40;
+    } else if (index === 4) {
+      sValue = 60;
+    } else if (index === 5) {
+      sValue = 70;
+    }
+    return sValue;
+  };
+
+  this.dealFirstLiveOpacity = function(color, index) {
+    if(index >= 6) {
+      return;
+    }
+    var hsv = tinycolor(color).toHsv();
+    return tinycolor({
+      h: parseInt(hsv.h),
+      s: dealSOpacity(index),
+      v: Math.ceil(hsv.v),
+    }).toHexString();
+  }
+})()`;
+}
+// It is hacky way to make this function will be compiled preferentially by less
+// resolve error: `ReferenceError: colorPalette is not defined`
+// https://github.com/ant-design/ant-motion/issues/44
+.colorPaletteMixin();

@@ -1,0 +1,83 @@
+@import '../../style/themes/index';
+
+@tree-prefix-cls: ~'@{ant-prefix}-tree';
+
+.@{tree-prefix-cls} {
+  &.@{tree-prefix-cls}-directory {
+    position: relative;
+
+    // Stretch selector width
+    > li,
+    .@{tree-prefix-cls}-child-tree > li {
+      span {
+        &.@{tree-prefix-cls}-switcher {
+          position: relative;
+          z-index: 1;
+
+          &.@{tree-prefix-cls}-switcher-noop {
+            pointer-events: none;
+          }
+        }
+
+        &.@{tree-prefix-cls}-checkbox {
+          position: relative;
+          z-index: 1;
+        }
+
+        &.@{tree-prefix-cls}-node-content-wrapper {
+          user-select: none;
+
+          &:hover {
+            background: transparent;
+
+            &::before {
+              background: @item-hover-bg;
+            }
+          }
+
+          &.@{tree-prefix-cls}-node-selected {
+            color: @tree-directory-selected-color;
+            background: @primary-1;
+            border-radius: @border-radius-bg;
+          }
+          &.@{tree-prefix-cls}-node-content-wrapper:not(.@{tree-prefix-cls}-node-selected):hover {
+            background: @background-color-base;
+          }
+
+          > span {
+            position: relative;
+            z-index: 1;
+          }
+        }
+      }
+
+      &.@{tree-prefix-cls}-treenode-selected {
+        > span {
+          &.@{tree-prefix-cls}-switcher {
+            color: @tree-directory-selected-color;
+          }
+
+          &.@{tree-prefix-cls}-checkbox {
+            .@{tree-prefix-cls}-checkbox-inner {
+              border-color: @primary-color;
+            }
+
+            &.@{tree-prefix-cls}-checkbox-checked {
+              &::after {
+                border-color: @checkbox-check-color;
+              }
+
+              .@{tree-prefix-cls}-checkbox-inner {
+                background: @checkbox-check-color;
+
+                &::after {
+                  border-color: @primary-color;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
